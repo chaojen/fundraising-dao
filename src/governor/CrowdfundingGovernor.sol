@@ -54,7 +54,7 @@ contract CrowdfundingGovernor is ICrowdfundingGovernor, CrowdfundingGovernorStor
         // TODO 執行退款
         address[] memory funders = fundersOf[crowdfundingId];
         for (uint256 i = 0; i < funders.length; ++i) {
-            funders[i]
+            funders[i];
         }
 
         emit CrowdfundingCanceled();
