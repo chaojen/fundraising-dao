@@ -2,8 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
-import "src/governance/USDGs.sol";
-import "src/governance/ActionCenter.sol";
+import "src/USDGs.sol";
 
 contract USDGsScript is Script {
     function run() external {
