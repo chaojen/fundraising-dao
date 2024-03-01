@@ -5,8 +5,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-/// @title SDGsUSD
-contract SDGsUSD is ERC20, Ownable {
+/// @title USDGs
+contract USDGs is ERC20, Ownable {
     event Mint(address to, uint256 amount);
     event NewHolder(address holder);
     event Withdraw(address to, uint256 amount);
@@ -18,9 +18,9 @@ contract SDGsUSD is ERC20, Ownable {
 
     mapping(address => bool) private holderIndices;
 
-    constructor(address _owner, address _token) ERC20("SDGsUSD", "SDGsUSD") Ownable(_owner) {
+    constructor(address _owner, address _token) ERC20("USDGs", "USDGs") Ownable(_owner) {
         custodyToken = IERC20(_token);
-        // 首次發行 1,000,000,000 SDGsUSD
+        // 首次發行 1,000,000,000 USDGs
         _mint(address(this), 1_000_000_000 * 10 ** decimals());
     }
 

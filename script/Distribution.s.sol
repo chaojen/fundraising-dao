@@ -2,7 +2,8 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
-import "src/governor/SDGsUSD.sol";
+import "src/governance/USDGs.sol";
+import "src/governance/ActionCenter.sol";
 
 contract DistributionScript is Script {
     function run() external {
@@ -12,7 +13,8 @@ contract DistributionScript is Script {
 
         vm.startBroadcast(privateKey);
 
-        new SDGsUSD(account, usdt);
+        USDGs tokenUSDGs = new USDGs(account, usdt);
+        new ActionCenter(account, address(tokenUSDGs));
 
         vm.stopBroadcast();
     }
