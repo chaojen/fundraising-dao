@@ -4,9 +4,12 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /// @title USDGs
 contract USDGs is ERC20, Ownable {
+    using SafeERC20 for IERC20;
+
     event Mint(address to, uint256 amount);
     event NewHolder(address holder);
     event Withdraw(address to, uint256 amount);
@@ -32,10 +35,8 @@ contract USDGs is ERC20, Ownable {
         uint256 allowance = custodyToken.allowance(msg.sender, address(this));
         require(allowance >= _amount, "allowance is not enough.");
 
-        bool succeeded = custodyToken.transferFrom(msg.sender, address(this), _amount);
-        require(succeeded, "transfer from USD token not succeeded.");
-
         _transfer(address(this), msg.sender, _amount);
+        custodyToken.safeTransferFrom(msg.sender, address(this), _amount);
         emit Mint(msg.sender, _amount);
     }
 
@@ -44,9 +45,8 @@ contract USDGs is ERC20, Ownable {
         require(balanceOf(msg.sender) >= _amount, "balance is insufficient to cover the withdrawal amount.");
 
         _transfer(msg.sender, address(this), _amount);
-
-        bool succeeded = custodyToken.transfer(msg.sender, _amount);
-        if (succeeded) emit Withdraw(msg.sender, _amount);
+        custodyToken.safeTransfer(msg.sender, _amount);
+        emit Withdraw(msg.sender, _amount);
     }
 
     /// @notice 新增供應上限
@@ -63,6 +63,10 @@ contract USDGs is ERC20, Ownable {
 
         _burn(address(this), total);
         emit Burned(total);
+    }
+
+    function decimals() public pure override returns (uint8) {
+        return 6;
     }
 
     function _update(address from, address to, uint256 amount) internal override {

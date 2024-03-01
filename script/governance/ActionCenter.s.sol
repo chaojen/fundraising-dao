@@ -5,16 +5,15 @@ import "forge-std/Script.sol";
 import "src/governance/USDGs.sol";
 import "src/governance/ActionCenter.sol";
 
-contract DistributionScript is Script {
+contract ActionCenterScript is Script {
     function run() external {
         uint256 privateKey = vm.envUint("PRIVATE_KEY_LAUNCH_PAD");
         address account = vm.addr(privateKey);
-        address usdt = vm.envAddress("CONTRACT_SEPOLIA_USDT");
+        address tokenUSDGs = vm.envAddress("CONTRACT_SEPOLIA_USDT");
 
         vm.startBroadcast(privateKey);
 
-        USDGs tokenUSDGs = new USDGs(account, usdt);
-        new ActionCenter(account, address(tokenUSDGs));
+        new ActionCenter(account, tokenUSDGs);
 
         vm.stopBroadcast();
     }

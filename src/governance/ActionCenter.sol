@@ -30,7 +30,7 @@ contract ActionCenter is IActionCenter, Ownable {
             _targetToken: address(tokenUSDGs),
             _goalAmount: _goalAmount
         });
-        emit ActionPlanCreated(msg.sender, address(tokenUSDGs), _goalAmount, _description);
+        emit ActionPlanCreated(planId, msg.sender, address(tokenUSDGs), _goalAmount, _description);
 
         return planId;
     }
