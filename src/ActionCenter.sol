@@ -26,6 +26,9 @@ contract ActionCenter is IActionCenter, Ownable {
         external
         override
     {
+        require(_targetToken != address(0x0), "target token address is invalid.");
+        require(bytes(_description).length != 0, "must be described.");
+
         uint256 planId = hashActionPlan({
             _initiator: msg.sender,
             _targetToken: address(_targetToken),
