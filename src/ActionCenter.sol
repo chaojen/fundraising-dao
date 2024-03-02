@@ -22,27 +22,25 @@ contract ActionCenter is IActionCenter, Ownable {
     constructor(address _owner) Ownable(_owner) {}
 
     /// @notice 建立新的行動計畫
-    function createActionPlan(address _targetToken, uint256 _goalAmount, string memory _description)
-        external
-        override
-    {
+    function createActionPlan(
+        SDGoal[] calldata _goals,
+        address _targetToken,
+        uint256 _goalAmount,
+        string calldata _description
+    ) external override {
         require(_targetToken != address(0x0), "target token address is invalid.");
         require(bytes(_description).length != 0, "must be described.");
 
-        uint256 planId = hashActionPlan({
-            _initiator: msg.sender,
-            _targetToken: address(_targetToken),
-            _goalAmount: _goalAmount,
-            _description: _description
-        });
+        uint256 timestamp = block.timestamp;
+        uint256 planId = hashActionPlan(msg.sender, timestamp);
 
         ActionPlan storage plan = plans[planId];
         plan.initiator = msg.sender;
-        plan.createTimestamp = block.timestamp;
+        plan.createTimestamp = timestamp;
         plan.targetToken = IERC20(_targetToken);
         plan.goalAmount = _goalAmount;
 
-        emit ActionPlanCreated(planId, msg.sender, address(_targetToken), _goalAmount, _description);
+        emit ActionPlanCreated(planId, _goals, msg.sender, address(_targetToken), _goalAmount, _description);
     }
 
     /// @notice 進行贊助
@@ -91,12 +89,8 @@ contract ActionCenter is IActionCenter, Ownable {
         emit Allocated(plan.initiator, _amount);
     }
 
-    /// @notice 行動計畫摘要
-    function hashActionPlan(address _initiator, address _targetToken, uint256 _goalAmount, string memory _description)
-        public
-        pure
-        returns (uint256)
-    {
-        return uint256(keccak256(abi.encode(_initiator, _targetToken, _goalAmount, keccak256(bytes(_description)))));
+    /// @notice 生成行動計畫摘要
+    function hashActionPlan(address _initiator, uint256 _timestamp) public pure returns (uint256) {
+        return uint256(keccak256(abi.encode(_initiator, _timestamp)));
     }
 }
