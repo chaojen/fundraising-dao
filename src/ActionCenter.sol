@@ -21,6 +21,10 @@ contract ActionCenter is IActionCenter, Ownable {
 
     constructor() Ownable(msg.sender) {}
 
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+
     /// @notice 建立新的行動計畫
     function createActionPlan(
         SDGoal[] calldata _goals,

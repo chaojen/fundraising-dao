@@ -33,9 +33,9 @@ contract SDGsDAOScript is Script {
 
         vm.stopBroadcast();
 
-        console.log("ActionCenter ->", address(actionCenter));
-        console.log("GovToken ->", address(token));
-        console.log("Timelock ->", address(timelock));
-        console.log("SDGsDAO ->", address(governor));
+        console.log("CONTRACT_ACTION_CENTER=", address(actionCenter));
+        console.log("CONTRACT_GOV_TOKEN=", address(token));
+        console.log("CONTRACT_TIMELOCK=", address(timelock));
+        console.log("CONTRACT_SDGs_DAO=", address(governor));
     }
 }

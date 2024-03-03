@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 interface IActionCenter {
+    event Received(address sender, uint256 value);
     event ActionPlanCreated(
         uint256 planId, SDGoal[] goals, address initiator, address targetToken, uint256 goalAmount, string description
     );
