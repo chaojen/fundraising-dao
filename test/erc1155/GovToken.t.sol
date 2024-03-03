@@ -16,17 +16,32 @@ contract GovTokenTest is Test, ERC1155Holder {
 
     function testMintBatch() external {
         // arrange
-        IGovToken.Rarity[] memory raritys = new IGovToken.Rarity[](1);
+        uint256[] memory ids = new uint256[](1);
+        ids[0] = 0;
         uint256[] memory quantities = new uint256[](1);
-        raritys[0] = IGovToken.Rarity.Common;
         quantities[0] = 1;
 
         // act
-        token.mintBatch{value: 0.3 ether}(raritys, quantities);
+        token.mintBatch{value: 0.3 ether}(ids, quantities);
 
         // assert
-        uint256 balance = token.balanceOf(address(this), 1000);
+        uint256 balance = token.balanceOf(address(this), 0);
         assertEq(balance, 1);
+    }
+
+    function testVotes() external {
+        // arrange
+        uint256[] memory ids = new uint256[](1);
+        ids[0] = 0;
+        uint256[] memory quantities = new uint256[](1);
+        quantities[0] = 1;
+
+        // act
+        token.mintBatch{value: 0.3 ether}(ids, quantities);
+
+        // assert
+        uint256 votes = token.getVotes(address(this));
+        assertEq(votes, 1);
     }
 
     receive() external payable {}

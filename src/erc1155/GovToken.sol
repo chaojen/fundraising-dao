@@ -4,96 +4,84 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "src/erc1155/IGovToken.sol";
+import "src/erc1155/ERC1155Votes.sol";
 
 /// @notice 治理代幣
-contract GovToken is IGovToken, ERC1155, Ownable {
-    modifier tokenExisted(Rarity[] memory _raritys) {
-        for (uint256 i = 0; i < _raritys.length; i++) {
-            require(tokenInfos[_raritys[i]].id != 0, "token does not exist.");
-        }
-        _;
-    }
-
+contract GovToken is IGovToken, ERC1155, ERC1155Votes, Ownable {
     address public treasury;
-    mapping(Rarity => TokenInfo) public tokenInfos;
 
-    constructor(address _owner, address _treasury) ERC1155("https://example/api/item/") Ownable(_owner) {
+    uint256[] public ids = [0, 1, 2, 3];
+    mapping(uint256 id => uint256 price) public priceOf;
+    mapping(uint256 id => uint256 votingPower) public votingPowerOf;
+
+    constructor(address _owner, address _treasury)
+        ERC1155("https://example/api/item/")
+        EIP712("GovToken", "1")
+        Ownable(_owner)
+    {
         treasury = _treasury;
 
-        TokenInfo storage commonTokenInfo = tokenInfos[Rarity.Common];
-        commonTokenInfo.id = 1_000;
-        commonTokenInfo.price = 0.1 ether;
+        priceOf[0] = 0.0001 ether;
+        priceOf[1] = 0.0001 ether;
+        priceOf[2] = 0.0001 ether;
+        priceOf[3] = 0.0001 ether;
 
-        TokenInfo storage rareTokenInfo = tokenInfos[Rarity.Rare];
-        rareTokenInfo.id = 2_000;
-        rareTokenInfo.price = 0.2 ether;
-
-        TokenInfo storage epicTokenInfo = tokenInfos[Rarity.Epic];
-        epicTokenInfo.id = 3_000;
-        epicTokenInfo.price = 0.3 ether;
-
-        TokenInfo storage legendaryTokenInfo = tokenInfos[Rarity.Legendary];
-        legendaryTokenInfo.id = 4_000;
-        legendaryTokenInfo.price = 0.4 ether;
+        votingPowerOf[0] = 1;
+        votingPowerOf[1] = 1;
+        votingPowerOf[2] = 1;
+        votingPowerOf[3] = 1;
     }
 
     /// @notice 公開鑄造
-    function mintBatch(Rarity[] calldata _raritys, uint256[] calldata _quantities)
-        external
-        payable
-        override
-        tokenExisted(_raritys)
-    {
-        require(_raritys.length == _quantities.length, "arrays length mismatch.");
+    function mintBatch(uint256[] calldata _ids, uint256[] calldata _quantities) external payable override {
+        require(_ids.length == _quantities.length, "arrays length mismatch.");
 
         uint256 totalPrice;
-        uint256[] memory tokenIds = new uint256[](_raritys.length);
-        for (uint256 i = 0; i < _raritys.length; i++) {
-            TokenInfo memory tokenInfo = tokenInfos[_raritys[i]];
-            totalPrice += tokenInfo.price * _quantities[i];
-            tokenIds[i] = tokenInfo.id;
+        for (uint256 i = 0; i < _ids.length; i++) {
+            uint256 id = _ids[i];
+            require(id == ids[0] || id == ids[1] || id == ids[2] || id == ids[3], "id is not validate.");
+
+            totalPrice += priceOf[id] * _quantities[i];
         }
         require(msg.value >= totalPrice, "value is not enough.");
 
         (bool sentTreasurySucceeded, bytes memory sentTreasuryMsg) = payable(treasury).call{value: totalPrice}("");
         require(sentTreasurySucceeded, string(sentTreasuryMsg));
 
-        _mintBatch(msg.sender, tokenIds, _quantities, "");
-        emit Minted(msg.sender, _raritys, _quantities);
+        _mintBatch(msg.sender, _ids, _quantities, "");
+        if (delegates(msg.sender) == address(0x0)) delegate(msg.sender);
 
         // 多餘退款
         if (msg.value > totalPrice) {
             (bool refundSucceeded, bytes memory refundMsg) = msg.sender.call{value: msg.value - totalPrice}("");
             require(refundSucceeded, string(refundMsg));
         }
+
+        emit Minted(msg.sender, _ids, _quantities);
     }
 
-    /// @notice 遞增 tokenId
-    function increaseTokenId() external override onlyOwner {
-        tokenInfos[Rarity.Common].id++;
-        tokenInfos[Rarity.Rare].id++;
-        tokenInfos[Rarity.Epic].id++;
-        tokenInfos[Rarity.Legendary].id++;
-        emit TokenIdUpdated();
-    }
+    /// @notice 更新
+    function renew(uint256[] calldata _prices, uint256[] calldata _votingPowers) external override onlyOwner {
+        require(_prices.length == 4 && _votingPowers.length == 4, "arrays length mismatch.");
 
-    /// @notice 更新價格
-    function updatePrice(Rarity[] memory _raritys, uint256[] memory _prices)
-        external
-        override
-        onlyOwner
-        tokenExisted(_raritys)
-    {
-        require(_raritys.length == _prices.length, "arrays length mismatch.");
+        ids[0] += 4;
+        ids[1] += 4;
+        ids[2] += 4;
+        ids[3] += 4;
 
-        for (uint256 i = 0; i < _raritys.length; i++) {
-            tokenInfos[_raritys[i]].price = _prices[i];
-        }
-        emit PriceUpdated(_raritys, _prices);
+        priceOf[ids[0]] = _prices[0];
+        priceOf[ids[1]] = _prices[1];
+        priceOf[ids[2]] = _prices[2];
+        priceOf[ids[3]] = _prices[3];
+
+        votingPowerOf[ids[0]] = _votingPowers[0];
+        votingPowerOf[ids[1]] = _votingPowers[1];
+        votingPowerOf[ids[2]] = _votingPowers[2];
+        votingPowerOf[ids[3]] = _votingPowers[3];
     }
 
     /// @notice 更新 token 元資料
-    function setURI(string memory _newURI) external onlyOwner {
+    function setURI(string calldata _newURI) external onlyOwner {
         _setURI(_newURI);
         emit URIUpdated(_newURI);
     }
@@ -101,5 +89,26 @@ contract GovToken is IGovToken, ERC1155, Ownable {
     /// @notice 取得 token 元資料
     function uri(uint256 id) public view override returns (string memory) {
         return string(abi.encodePacked(super.uri(id), id, ".json"));
+    }
+
+    // The functions below are overrides required by Solidity.
+
+    function powerOfToken(uint256 id) public view override returns (uint256) {
+        return votingPowerOf[id];
+    }
+
+    function clock() public view override returns (uint48) {
+        return uint48(block.timestamp);
+    }
+
+    function CLOCK_MODE() public pure override returns (string memory) {
+        return "mode=timestamp";
+    }
+
+    function _update(address _from, address _to, uint256[] memory _ids, uint256[] memory _values)
+        internal
+        override(ERC1155, ERC1155Votes)
+    {
+        super._update(_from, _to, _ids, _values);
     }
 }
