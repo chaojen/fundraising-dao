@@ -19,7 +19,7 @@ contract ActionCenter is IActionCenter, Ownable {
 
     mapping(uint256 => ActionPlan) public plans;
 
-    constructor(address _owner) Ownable(_owner) {}
+    constructor() Ownable(msg.sender) {}
 
     /// @notice 建立新的行動計畫
     function createActionPlan(

@@ -11,7 +11,7 @@ contract GovTokenTest is Test, ERC1155Holder {
     GovToken token;
 
     function setUp() external {
-        token = new GovToken(address(this), address(this));
+        token = new GovToken(address(this));
     }
 
     function testMintBatch() external {

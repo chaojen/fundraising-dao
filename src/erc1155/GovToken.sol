@@ -14,11 +14,7 @@ contract GovToken is IGovToken, ERC1155, ERC1155Votes, Ownable {
     mapping(uint256 id => uint256 price) public priceOf;
     mapping(uint256 id => uint256 votingPower) public votingPowerOf;
 
-    constructor(address _owner, address _treasury)
-        ERC1155("https://example/api/item/")
-        EIP712("GovToken", "1")
-        Ownable(_owner)
-    {
+    constructor(address _treasury) ERC1155("https://example/api/item/") EIP712("GovToken", "1") Ownable(msg.sender) {
         treasury = _treasury;
 
         priceOf[0] = 0.0001 ether;
