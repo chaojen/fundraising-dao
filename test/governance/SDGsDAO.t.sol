@@ -19,7 +19,15 @@ contract SDGsDAOTest is Test, ERC1155Holder {
         actionCenter = new ActionCenter();
         token = new GovToken(address(actionCenter));
         timelock = new Timelock(1 minutes, address(this));
-        governor = new SDGsDAO(token, 1 minutes, 1 minutes, 0, timelock);
+        governor = new SDGsDAO({
+            _name: "SDGs DAO",
+            _votingDelay: 1 minutes,
+            _votingPeriod: 1 hours,
+            _proposalThreshold: 0,
+            _token: token,
+            _quorumFraction: 1,
+            _timelock: timelock
+        });
     }
 
     function testPropose() external {

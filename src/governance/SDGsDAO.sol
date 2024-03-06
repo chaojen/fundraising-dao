@@ -21,16 +21,18 @@ contract SDGsDAO is
     GovernorTimelockControl
 {
     constructor(
-        IVotes _token,
+        string memory _name,
         uint48 _votingDelay,
         uint32 _votingPeriod,
         uint256 _proposalThreshold,
+        IVotes _token,
+        uint256 _quorumFraction,
         TimelockController _timelock
     )
-        Governor("SDGsDAO")
+        Governor(_name)
         GovernorSettings(_votingDelay, _votingPeriod, _proposalThreshold)
         GovernorVotes(_token)
-        GovernorVotesQuorumFraction(4)
+        GovernorVotesQuorumFraction(_quorumFraction)
         GovernorTimelockControl(_timelock)
     {}
 

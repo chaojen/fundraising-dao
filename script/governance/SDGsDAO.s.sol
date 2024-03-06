@@ -18,9 +18,17 @@ contract SDGsDAOScript is Script {
 
         // create contracts
         ActionCenter actionCenter = new ActionCenter();
-        GovToken token = new GovToken(address(actionCenter));
-        Timelock timelock = new Timelock(1 minutes, account);
-        SDGsDAO governor = new SDGsDAO(token, 1 minutes, 1 hours, 1, timelock);
+        Timelock timelock = new Timelock({_minDelay: 1 minutes, _admin: account});
+        GovToken token = new GovToken({_treasury: address(timelock)});
+        SDGsDAO governor = new SDGsDAO({
+            _name: "SDGs DAO",
+            _votingDelay: 1 minutes,
+            _votingPeriod: 1 hours,
+            _proposalThreshold: 0,
+            _token: token,
+            _quorumFraction: 1,
+            _timelock: timelock
+        });
 
         // timelock settings
         timelock.grantRole(timelock.PROPOSER_ROLE(), address(governor));
