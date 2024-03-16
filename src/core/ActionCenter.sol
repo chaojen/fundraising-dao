@@ -4,8 +4,8 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "src/IActionCenter.sol";
-import "src/ActionPlan.sol";
+import "src/core/IActionCenter.sol";
+import "src/core/ActionPlan.sol";
 
 contract ActionCenter is IActionCenter, Ownable {
     using SafeERC20 for IERC20;
@@ -31,7 +31,7 @@ contract ActionCenter is IActionCenter, Ownable {
         address _targetToken,
         uint256 _goalAmount,
         string calldata _description
-    ) external override {
+    ) external override onlyOwner() {
         require(_targetToken != address(0x0), "target token address is invalid.");
         require(bytes(_description).length != 0, "must be described.");
 

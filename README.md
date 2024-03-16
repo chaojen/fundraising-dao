@@ -1,66 +1,51 @@
-## Foundry
+# SDGs DAO Contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+一個台灣在地致力於 SDGs 發展的 DAO
 
-Foundry consists of:
+## ??
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+- DAO 治理權合約
+- ERC721
+- 初期發行 1,000 份
+- 持有此 NFT 即代表有權參與 DAO 治理，視為 DAO 治理權人
 
-## Documentation
+### 發行佔比
 
-https://book.getfoundry.sh/
+- 50% 業界專家
+- 30% 公開發行
+- 20% 項目方
 
-## Usage
+### 治理權
 
-### Build
+- 參與表決募資提案通過與否，通過即表示能在募資池合約中創建募資池
 
-```shell
-$ forge build
-```
+### 未來計畫
 
-### Test
+- 參與 KYC 認證提案人
 
-```shell
-$ forge test
-```
+## SDGsDAO
 
-### Format
+- DAO 治理合約
+- 使用 Openzeppelin Governance 合約庫合約
+- DAO 提案、投票、取消、執行等操作合約
 
-```shell
-$ forge fmt
-```
+### 提案
 
-### Gas Snapshots
+- 任何人皆可為募資提案人，可於此發起募資提案
 
-```shell
-$ forge snapshot
-```
+## Timelock
 
-### Anvil
+- DAO 代理執行合約
+- 使用 Openzeppelin Governance 合約庫合約
+- 治理合約提案通過後，由此合約代理執行
 
-```shell
-$ anvil
-```
+## ActionCenter
 
-### Deploy
+- 募資池合約
+- 核心被治理合約，其操作僅能透過 DAO 執行合約操作
+- 紀錄募資案、接收募資金額
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+## (收據合約)
 
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- ERC721
+- 參與募資案的贊助人獲得最終收據 NFT

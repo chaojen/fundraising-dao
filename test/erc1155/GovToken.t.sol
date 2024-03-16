@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "src/erc1155/GovToken.sol";
-import "src/ActionCenter.sol";
+import "src/core/ActionCenter.sol";
 
 contract GovTokenTest is Test, ERC1155Holder {
     ActionCenter actionCenter;

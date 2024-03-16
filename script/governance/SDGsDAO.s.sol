@@ -7,7 +7,7 @@ import "forge-std/Script.sol";
 import "src/governance/SDGsDAO.sol";
 import "src/governance/Timelock.sol";
 import "src/erc1155/GovToken.sol";
-import "src/ActionCenter.sol";
+import "src/core/ActionCenter.sol";
 
 contract SDGsDAOScript is Script {
     function run() external {
